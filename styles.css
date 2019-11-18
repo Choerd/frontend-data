@@ -42,4 +42,5 @@ span {
 .text {
     fill: black;
     text-anchor: middle;
+    font-weight: 600;
 }

@@ -29,7 +29,7 @@ fetchData()
 
         // Size scale for countries
         const size = d3.scaleLinear()
-            .domain([0, 1100])
+            .domain([0, 600])
             .range([10, 75]) // Circle will be between 10 and 75 px wide
 
         // Meegeven van data naar alle groepselementen
