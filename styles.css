@@ -1,0 +1,45 @@
+* {
+    font-family: Raleway, Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+span {
+    font-weight: 600;
+}
+
+.datavis-container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    text-align: center;
+}
+
+.info {
+    position: relative;
+    top: 20px;
+    margin: 20px;
+    text-align: center;
+}
+
+.info p {
+    font-size: 18px;
+    margin-top: 10px;
+}
+
+.circle {
+    opacity: 0.8;
+    stroke: black;
+    stroke-width: 2.5px;
+}
+
+.circle:hover {
+    stroke-width: 5px;
+    opacity: 0.9;
+}
+
+.text {
+    fill: black;
+    text-anchor: middle;
+}
