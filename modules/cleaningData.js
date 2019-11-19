@@ -4,7 +4,7 @@ export default {
     fromObjectToArray
 }
 
-export function remapData(rawData) {
+function remapData(rawData) {
     return rawData.map((result) => {
         return {
             materiaal: result.materiaalLabel.value,
@@ -13,7 +13,7 @@ export function remapData(rawData) {
     })
 }
 
-export function getMaterialsPerCountry(accessibleData) {
+function getMaterialsPerCountry(accessibleData) {
     const alleMaterialenArray = []
     const alleLandenArray = [...new Set(accessibleData.map(voorwerp => voorwerp.land))]
     const alleLandenMetMaterialenArray = []
@@ -49,7 +49,7 @@ export function getMaterialsPerCountry(accessibleData) {
     return alleLandenMetMaterialenArray
 }
 
-export function fromObjectToArray(materialObjectPerCountry) {
+function fromObjectToArray(materialObjectPerCountry) {
     var allarray = []
 
     materialObjectPerCountry.forEach(land => {

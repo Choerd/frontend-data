@@ -21,7 +21,7 @@ fetchData()
 
             const color = d3.scaleOrdinal()
                 .domain(alleLanden) // Alle landen in de array krijgen een eigen kleur
-                .range(d3.schemeTableau10); // Kleurenschema van d3 gebruikt
+                .range(d3.schemeCategory10); // Kleurenschema van d3 gebruikt
 
             const size = d3.scaleLinear()
                 .domain([0, 1500])
