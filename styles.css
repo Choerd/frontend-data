@@ -34,13 +34,15 @@ span {
     stroke-width: 2.5px;
 }
 
-.circle:hover {
+.hover {
     stroke-width: 5px;
     opacity: 0.9;
+    font-weight: 600;
 }
 
 .text {
     fill: black;
     text-anchor: middle;
-    font-weight: 600;
+    alignment-baseline: middle;
+    cursor: default;
 }
