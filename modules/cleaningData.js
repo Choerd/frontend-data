@@ -1,7 +1,8 @@
 export default {
     remapData,
     getMaterialsPerCountry,
-    fromObjectToArray
+    fromObjectToArray,
+    cleanData
 }
 
 function remapData(rawData) {
@@ -13,36 +14,39 @@ function remapData(rawData) {
     })
 }
 
+function cleanData(remappedData) {
+    return remappedData.map(datapiece => {
+        if (datapiece.materiaal.includes("(")) {
+            return {
+                materiaal: datapiece.materiaal.split(" ")[0],
+                land: datapiece.land
+            }
+        } else {
+            return {
+                materiaal: datapiece.materiaal,
+                land: datapiece.land
+            }
+        }
+    })
+}
+
 function getMaterialsPerCountry(accessibleData) {
-    const alleMaterialenArray = []
     const alleLandenArray = [...new Set(accessibleData.map(voorwerp => voorwerp.land))]
     const alleLandenMetMaterialenArray = []
 
     alleLandenArray.map(land => {
-        let createObject = new Object()
-        accessibleData.filter(voorwerp => {
-            if (voorwerp.land.includes(land)) {
-                alleMaterialenArray.push(createObject = {
-                    land: land,
-                    materiaal: voorwerp.materiaal,
-                })
-            }
-        })
-    })
-
-    alleLandenArray.map(land => {
-        let maakNieuwObject = new Object()
-        alleMaterialenArray.filter(data => {
+        let obj = new Object()
+        accessibleData.filter(data => {
             if (data.land === land) {
-                if (maakNieuwObject[data.materiaal] != null) {
-                    maakNieuwObject[data.materiaal] += 1
+                if (obj[data.materiaal] != null) {
+                    obj[data.materiaal] += 1
                 } else {
-                    maakNieuwObject[data.materiaal] = 1
+                    obj[data.materiaal] = 1
                 }
             }
         })
         alleLandenMetMaterialenArray.push({
-            materiaalObject: maakNieuwObject,
+            materiaalObject: obj,
             land: land,
         })
     })
@@ -62,7 +66,7 @@ function fromObjectToArray(materialObjectPerCountry) {
 
         var materialArray = Object.keys(land.materiaalObject).map(function (key) {
             return {
-                materiaal: key,
+                key: key,
                 amount: land.materiaalObject[key]
             }
         })
