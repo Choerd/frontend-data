@@ -90,35 +90,8 @@ fetchData()
 
             // Update data function
             function updateData(context, svg) {
-                console.log("Data van de geklikte bol:", context)
-
-                var canvas = d3.select('#datavis')
-
-                canvas.select('svg').remove()
+                d3.select('#datavis').select('svg').remove()
                 visualizeData(context.materialen);
-
-                // var groups = svg.selectAll('g')
-                //     .data(context.materialen)
-
-                // svg
-                //     .enter()
-                //     .append("circle")
             }
         }
     })
-
-// Update data function
-// function updateData(context, data) {
-//     d3.selectAll("g")
-//         .remove()
-//         .data(context.materialen)
-//         .append('g')
-//         .exit()
-// }
-
-
-// console.log("Geklikte cirkel:", this)
-// console.log("Data die moet worden ingeladen in de cirkels", data.materialen)
-
-// const groups = d3.selectAll("g")
-// console.log(groups)
