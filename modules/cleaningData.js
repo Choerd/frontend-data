@@ -36,7 +36,7 @@ function getMaterialsPerCountry(accessibleData) {
 
     alleLandenArray.map(land => {
         let obj = new Object()
-        accessibleData.filter(data => {
+        accessibleData.map(data => {
             if (data.land === land) {
                 if (obj[data.materiaal] != null) {
                     obj[data.materiaal] += 1
@@ -45,6 +45,7 @@ function getMaterialsPerCountry(accessibleData) {
                 }
             }
         })
+
         alleLandenMetMaterialenArray.push({
             materiaalObject: obj,
             land: land,
@@ -56,8 +57,7 @@ function getMaterialsPerCountry(accessibleData) {
 function fromObjectToArray(materialObjectPerCountry) {
     var allarray = []
 
-    materialObjectPerCountry.forEach(land => {
-
+    materialObjectPerCountry.forEach(land => { // Voor elk land een eigen object aanmaken
         var obj = {
             key: land.land,
             amount: null,

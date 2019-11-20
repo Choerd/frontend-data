@@ -7,7 +7,7 @@ fetchData()
     .then(accessibleData => functie.getMaterialsPerCountry(accessibleData))
     .then(materialObjectPerCountry => functie.fromObjectToArray(materialObjectPerCountry))
     .then(data => {
-        console.log(data)
+        // console.log(data)
 
         visualizeData(data)
 
@@ -43,7 +43,9 @@ fetchData()
                 .on("mouseout", unhoverCircle)
 
                 // Function to update the data
-                .on("click", updateData)
+                .on("click", el => {
+                    updateData(el, svg)
+                })
 
             // Aanmaken van een circle in de group
             const circle = datacircle.append("circle")
@@ -54,9 +56,9 @@ fetchData()
             // Aanmaken van text in de group
             const text = datacircle.append("text")
                 .text(function (d) {
-                    // if (d.amount >= 500) {
-                    return d.key + " - " + d.amount + " voorwerpen"
-                    // }
+                    if (d.amount >= 500) {
+                        return d.key + " - " + d.amount + " voorwerpen"
+                    }
                 })
                 .attr("class", "text")
 
@@ -85,14 +87,38 @@ fetchData()
                 this.children[0].classList.remove("hover")
                 this.children[1].classList.remove("hover")
             }
-        }
 
-        // Update data function
-        function updateData(data) {
-            console.log("Geklikte cirkel:", this)
-            console.log("Data die moet worden ingeladen in de cirkels", data.materialen)
+            // Update data function
+            function updateData(context, svg) {
+                console.log("Data van de geklikte bol:", context)
 
-            // var newData = data.materialen
-            // visualizeData(newData)
+                var canvas = d3.select('#datavis')
+
+                canvas.select('svg').remove()
+                visualizeData(context.materialen);
+
+                // var groups = svg.selectAll('g')
+                //     .data(context.materialen)
+
+                // svg
+                //     .enter()
+                //     .append("circle")
+            }
         }
     })
+
+// Update data function
+// function updateData(context, data) {
+//     d3.selectAll("g")
+//         .remove()
+//         .data(context.materialen)
+//         .append('g')
+//         .exit()
+// }
+
+
+// console.log("Geklikte cirkel:", this)
+// console.log("Data die moet worden ingeladen in de cirkels", data.materialen)
+
+// const groups = d3.selectAll("g")
+// console.log(groups)
