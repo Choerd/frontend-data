@@ -7,12 +7,11 @@ fetchData()
     .then(accessibleData => functie.getMaterialsPerCountry(accessibleData))
     .then(materialObjectPerCountry => functie.fromObjectToArray(materialObjectPerCountry))
     .then(data => {
-        // console.log(data)
+        console.log("Functional opgeschoonde data:", data)
 
         visualizeData(data)
 
         function visualizeData(data) {
-            // Variabelen
             const alleLanden = [...new Set(data.map(naam => naam.key))] // Aanmaken van verschillende categoriën voor bepalen van de kleur
             const dataVisContainer = document.querySelector(".datavis-container")
             const margin = 40
@@ -21,8 +20,8 @@ fetchData()
 
             const svg = d3.select("#datavis")
                 .append("svg")
-                .attr("width", width - margin)
-                .attr("height", height - margin)
+                .attr("width", width)
+                .attr("height", height)
 
             const color = d3.scaleOrdinal()
                 .domain(alleLanden)
@@ -43,9 +42,7 @@ fetchData()
                 .on("mouseout", unhoverCircle)
 
                 // Function to update the data
-                .on("click", el => {
-                    updateData(el, svg)
-                })
+                .on("click", el => updateData(el, svg))
 
             // Aanmaken van een circle in de group
             const circle = datacircle.append("circle")
@@ -56,9 +53,10 @@ fetchData()
             // Aanmaken van text in de group
             const text = datacircle.append("text")
                 .text(function (d) {
-                    if (d.amount >= 500) {
-                        return d.key + " - " + d.amount + " voorwerpen"
-                    }
+                    // if (d.amount >= 500) {
+                    // return d.key + " - " + d.amount + " voorwerpen"
+                    // }
+                    return d.amount
                 })
                 .attr("class", "text")
 
@@ -89,9 +87,16 @@ fetchData()
             }
 
             // Update data function
-            function updateData(context, svg) {
-                d3.select('#datavis').select('svg').remove()
+            function updateData(context) {
+                d3.select('#datavis')
+                    .select('svg')
+                    .remove()
+
+                console.log(context)
+
                 visualizeData(context.materialen);
             }
         }
     })
+
+// Bron: http://bl.ocks.org/alansmithy/e984477a741bc56db5a5
