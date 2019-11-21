@@ -14,11 +14,10 @@ fetchData()
     .then(accessibleData => functie.getMaterialsPerCountry(accessibleData))
     .then(materialObjectPerCountry => functie.fromObjectToArray(materialObjectPerCountry))
     .then(data => {
+        console.log(data)
 
         drawCircles(data)
-
     })
-
 
 function drawCircles(data) {
     const size = d3.scaleLinear()
@@ -39,15 +38,30 @@ function drawCircles(data) {
         .attr('class', 'circle')
         .attr("r", (d => size(d.amount)))
         .attr("fill", (d => color(d.key)))
+
         .on("click", el => updateData(el))
 
-    centerCircles(width, height, data, size, circle)
+    const text = groups.append("text")
+        .text(function (d) {
+            return d.amount
+        })
+        .attr("class", "text")
+
+    centerCircles(width, height, data, size, circle, text)
 }
 
 function updateData(context) {
     const size = d3.scaleLinear()
         .domain(circleSize(context.materialen))
-        .range([10, 70])
+        .range([10, circleSize(context.materialen)[1] / 4.5])
+
+    const color = d3.scaleLinear()
+        .domain(circleSize(context.materialen))
+        .range(['white', 'blue'])
+
+    svg.selectAll('g')
+        .remove()
+        .exit()
 
     const groups = svg.selectAll('g')
         .data(context.materialen)
@@ -57,13 +71,19 @@ function updateData(context) {
     const circle = groups.append('circle')
         .attr('class', 'circle')
         .attr("r", (d => size(d.amount)))
-    // .attr('fill', (d => color))
+        .attr('fill', (d => color(d.amount)))
 
-    centerCircles(width, height, context.materialen, size, circle)
+    const text = groups.append("text")
+        .text(function (d) {
+            return d.amount
+        })
+        .attr("class", "text")
+
+    centerCircles(width, height, context.materialen, size, circle, text)
 }
 
 // Ondersteunede functies die ik vaker gebruik in de main code
-function centerCircles(width, height, data, size, circle) {
+function centerCircles(width, height, data, size, circle, text) {
     const simulation = d3.forceSimulation()
         .force("center", d3.forceCenter().x(width / 2).y(height / 2))
         .force("charge", d3.forceManyBody().strength(.1))
@@ -75,9 +95,13 @@ function centerCircles(width, height, data, size, circle) {
             circle
                 .attr("cx", (d => d.x))
                 .attr("cy", (d => d.y))
+            text
+                .attr("dx", (d => d.x))
+                .attr("dy", (d => d.y))
         })
 }
 
+//max min size
 function circleSize(data) {
     const leastAmount = Math.min.apply(Math, data.map(lowest => lowest.amount))
     const mostAmount = Math.max.apply(Math, data.map(highest => highest.amount))
