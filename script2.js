@@ -8,8 +8,6 @@ const svg = d3.select('svg')
     .attr("width", width)
     .attr("height", height)
 
-
-
 fetchData()
     .then(rawData => functie.remapData(rawData))
     .then(remappedData => functie.cleanData(remappedData))
@@ -19,19 +17,13 @@ fetchData()
 
         drawCircles(data)
 
-        function updateData(context) {
-            d3.select('#datavis')
-                .selectAll('g')
-                .remove()
-
-            drawCircles(context.materialen);
-        }
     })
+
 
 function drawCircles(data) {
     const size = d3.scaleLinear()
-        .domain([0, 1500])
-        .range([10, 75])
+        .domain(circleSize(data))
+        .range([data[9].amount / 20, data[0].amount / 20])
 
     const alleLanden = [...new Set(data.map(naam => naam.key))]
     const color = d3.scaleOrdinal()
@@ -47,13 +39,30 @@ function drawCircles(data) {
         .attr('class', 'circle')
         .attr("r", (d => size(d.amount)))
         .attr("fill", (d => color(d.key)))
-        .on('mouseover', d => console.log(d))
-        .on("click", el => updateData(el, svg))
+        .on("click", el => updateData(el))
 
     centerCircles(width, height, data, size, circle)
 }
 
-// Plaatsen van de circles op in de SVG
+function updateData(context) {
+    const size = d3.scaleLinear()
+        .domain(circleSize(context.materialen))
+        .range([10, 70])
+
+    const groups = svg.selectAll('g')
+        .data(context.materialen)
+        .enter()
+        .append('g')
+
+    const circle = groups.append('circle')
+        .attr('class', 'circle')
+        .attr("r", (d => size(d.amount)))
+    // .attr('fill', (d => color))
+
+    centerCircles(width, height, context.materialen, size, circle)
+}
+
+// Ondersteunede functies die ik vaker gebruik in de main code
 function centerCircles(width, height, data, size, circle) {
     const simulation = d3.forceSimulation()
         .force("center", d3.forceCenter().x(width / 2).y(height / 2))
@@ -67,4 +76,10 @@ function centerCircles(width, height, data, size, circle) {
                 .attr("cx", (d => d.x))
                 .attr("cy", (d => d.y))
         })
+}
+
+function circleSize(data) {
+    const leastAmount = Math.min.apply(Math, data.map(lowest => lowest.amount))
+    const mostAmount = Math.max.apply(Math, data.map(highest => highest.amount))
+    return [leastAmount, mostAmount]
 }
