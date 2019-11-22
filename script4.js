@@ -12,83 +12,89 @@ fetchData()
     .then(rawData => functie.remapData(rawData))
     .then(remappedData => functie.cleanData(remappedData))
     .then(accessibleData => functie.getMaterialsPerCountry(accessibleData))
-    .then(materialObjectPerCountry => functie.fromObjectToArray(materialObjectPerCountry))
+    .then(materialObjectPerLand => functie.fromObjectToArray(materialObjectPerLand))
     .then(data => {
         console.log(data)
 
-        drawCircles(data)
+        maakCirkels(data)
     })
 
-function drawCircles(data) {
-    const size = d3.scaleLinear()
-        .domain(circleSize(data))
+function maakCirkels(data) {
+    const formaat = d3.scaleLinear()
+        .domain(berekenCirkelGrootte(data))
         .range([data[9].amount / 20, data[0].amount / 20])
 
     const alleLanden = [...new Set(data.map(naam => naam.key))]
-    const color = d3.scaleOrdinal()
+    const kleur = d3.scaleOrdinal()
         .domain(alleLanden)
         .range(d3.schemeCategory10)
 
-    const groups = svg.selectAll('g')
+    const svg = d3.select('svg')
+        .selectAll('g')
         .data(data)
-        .enter()
+
+    const groups = svg.enter()
         .append('g')
 
     const circle = groups.append('circle')
         .attr('class', 'circle')
-        .attr("r", (d => size(d.amount)))
-        .attr("fill", (d => color(d.key)))
+        .attr("r", (d => formaat(d.amount)))
+        .attr("fill", (d => kleur(d.key)))
+
+        /* Update, exit, remove */
+
 
         .on("click", el => updateData(el))
 
+
+    /* Re-renderen */
+
     const text = groups.append("text")
-        .text(function (d) {
-            return d.amount
+        .text(d => {
+            if (d.amount >= 500) {
+                return d.amount
+            }
         })
         .attr("class", "text")
 
-    centerCircles(width, height, data, size, circle, text)
+    centerCircles(width, height, data, formaat, circle, text)
 }
 
 function updateData(context) {
-    const size = d3.scaleLinear()
-        .domain(circleSize(context.materialen))
-        .range([10, circleSize(context.materialen)[1] / 4.5])
+    const formaat = d3.scaleLinear()
+        .domain(berekenCirkelGrootte(context.materialen))
+        .range([10, berekenCirkelGrootte(context.materialen)[1] / 4.5])
 
-    const color = d3.scaleLinear()
-        .domain(circleSize(context.materialen))
-        .range(['white', 'blue'])
+    const kleur = d3.scaleLinear()
+        .domain(berekenCirkelGrootte(context.materialen))
+        .range(['white', 'red'])
 
-    svg.selectAll('g')
-        .remove()
-        .exit()
-
-    const groups = svg.selectAll('g')
+    const svg = d3.select('svg')
+        .selectAll('g')
         .data(context.materialen)
-        .enter()
+
+    const groups = svg.enter()
         .append('g')
 
     const circle = groups.append('circle')
         .attr('class', 'circle')
-        .attr("r", (d => size(d.amount)))
-        .attr('fill', (d => color(d.amount)))
+        .attr("r", (d => formaat(d.amount)))
+        .attr('fill', (d => kleur(d.amount)))
 
     const text = groups.append("text")
-        .text(function (d) {
-            return d.amount
-        })
+        .text(d => d.amount)
         .attr("class", "text")
 
+    centerCircles(width, height, context.materialen, formaat, circle, text)
 
-    centerCircles(width, height, context.materialen, size, circle, text)
 }
 
 // Ondersteunede functies die ik vaker gebruik in de main code
-function centerCircles(width, height, data, size, circle, text) {
+function centerCircles(width, height, data, formaat, circle, text) {
     const simulation = d3.forceSimulation()
         .force("center", d3.forceCenter().x(width / 2).y(height / 2))
         .force("charge", d3.forceManyBody().strength(.1))
-        .force("collide", d3.forceCollide().strength(.2).radius(d => (size(d.amount) + 3)).iterations(1))
+        .force("collide", d3.forceCollide().strength(.2).radius(d => (formaat(d.amount) + 3)).iterations(1))
 
     simulation
         .nodes(data)
@@ -102,9 +108,8 @@ function centerCircles(width, height, data, size, circle, text) {
         })
 }
 
-//max min size
-function circleSize(data) {
-    const leastAmount = Math.min.apply(Math, data.map(lowest => lowest.amount))
-    const mostAmount = Math.max.apply(Math, data.map(highest => highest.amount))
-    return [leastAmount, mostAmount]
+function berekenCirkelGrootte(data) {
+    const laagsteWaarde = Math.min.apply(Math, data.map(laagste => laagste.amount))
+    const hoogsteWaarde = Math.max.apply(Math, data.map(hoogste => hoogste.amount))
+    return [laagsteWaarde, hoogsteWaarde]
 }

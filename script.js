@@ -14,7 +14,6 @@ fetchData()
         function visualizeData(data) {
             const alleLanden = [...new Set(data.map(naam => naam.key))] // Aanmaken van verschillende categoriën voor bepalen van de kleur
             const dataVisContainer = document.querySelector(".datavis-container")
-            const margin = 40
             const width = dataVisContainer.clientWidth
             const height = dataVisContainer.clientHeight
 
