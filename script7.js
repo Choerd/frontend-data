@@ -17,16 +17,6 @@ fetchData()
         console.log(data)
 
         render(svg, data)
-
-        // setTimeout(() => {
-        //     data[9].amount = 1300
-        //     render(svg, data)
-        // }, 1000)
-
-        // setTimeout(() => {
-        //     data[6].amount = 1600
-        //     render(svg, data)
-        // }, 2000)
     })
 
 function render(selection, data) {
@@ -48,7 +38,7 @@ function render(selection, data) {
     circles
         .enter().append('circle')
         .attr('class', 'circle')
-        .attr("r", (d => Math.sqrt(formaat(d.amount))))
+        .attr("r", (d => formaat(d.amount)))
         .attr("fill", (d => kleur(d.key)))
         .on('click', d => render(svg, d.materialen))
 
