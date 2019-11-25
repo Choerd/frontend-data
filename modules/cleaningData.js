@@ -55,7 +55,7 @@ function getMaterialsPerCountry(accessibleData) {
 }
 
 function fromObjectToArray(materialObjectPerCountry) {
-    var allarray = []
+    var nestedDataArray = []
 
     materialObjectPerCountry.forEach(land => { // Voor elk land een eigen object aanmaken
         var obj = {
@@ -64,7 +64,7 @@ function fromObjectToArray(materialObjectPerCountry) {
             materialen: null
         }
 
-        var materialArray = Object.keys(land.materiaalObject).map(function (key) {
+        var materiaalArray = Object.keys(land.materiaalObject).map(function (key) {
             return {
                 key: key,
                 amount: land.materiaalObject[key]
@@ -79,10 +79,10 @@ function fromObjectToArray(materialObjectPerCountry) {
             })
         }
 
-        obj.materialen = materialArray
-        obj.amount = sum(materialArray).amount
+        obj.materialen = materiaalArray
+        obj.amount = sum(materiaalArray).amount
 
-        allarray.push(obj)
+        nestedDataArray.push(obj)
     })
-    return allarray.sort((a, b) => b.amount - a.amount).splice(0, 10)
+    return nestedDataArray.sort((a, b) => b.amount - a.amount).splice(0, 10)
 }

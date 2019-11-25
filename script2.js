@@ -59,6 +59,8 @@ function updateData(context) {
         .domain(circleSize(context.materialen))
         .range(['white', 'blue'])
 
+    console.log(color)
+
     svg.selectAll('g')
         .remove()
         .exit()

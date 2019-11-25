@@ -33,7 +33,7 @@ span {
     stroke-width: 2.5px;
 }
 
-.hover {
+circle:hover {
     stroke-width: 5px;
     opacity: 0.9;
     font-weight: 600;

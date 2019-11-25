@@ -14,13 +14,9 @@ fetchData()
     .then(accessibleData => functie.getMaterialsPerCountry(accessibleData))
     .then(materialObjectPerLand => functie.fromObjectToArray(materialObjectPerLand))
     .then(data => {
+        console.log(data)
 
         render(svg, data)
-
-        setTimeout(() => {
-            data.pop()
-            render(svg, data)
-        }, 1000)
     })
 
 function render(selection, data) {
@@ -33,26 +29,44 @@ function render(selection, data) {
         .domain(alleLanden)
         .range(d3.schemeCategory10)
 
-    const groups = selection.selectAll('g')
+    // circles
+    const circles = selection.selectAll('circle')
         .data(data)
-
-    const groupsEnter = groups.enter().append('g')
-    groups.exit().remove()
-
-    groupsEnter.append('circle')
+    circles
+        .enter().append('circle')
         .attr('class', 'circle')
-        .attr("r", (d => formaat(d.amount)))
         .attr("fill", (d => kleur(d.key)))
+        .on('click', d => render(svg, d.materialen))
+        .merge(circles)
+        .attr("r", (d => formaat(d.amount)))
+    circles
+        .exit().remove()
+
+    //text
+    const text = selection.selectAll('text')
+        .data(data)
+    //enter
+    text
+        .enter().append('text')
+        .text(d => d.key)
+        .attr("class", "text")
+        // update
+        .merge(text)
+        .attr("r", (d => formaat(d.amount)))
+    // exit
+    text
+        .exit().remove()
 
     const allCircles = selection.selectAll('circle')
-    positioneerCirkels(width, height, data, formaat, allCircles)
+    const allText = selection.selectAll('text')
+    positioneerCirkels(width, height, data, formaat, allCircles, allText)
 }
 
 /* Ondersteunende functies
  * positioneerCirkels
  * berekenCirkelGrootte
  */
-function positioneerCirkels(width, height, data, formaat, circles) {
+function positioneerCirkels(width, height, data, formaat, circles, text) {
     const simulation = d3.forceSimulation()
         .force("center", d3.forceCenter().x(width / 2).y(height / 2))
         .force("charge", d3.forceManyBody().strength(.1))
@@ -64,6 +78,9 @@ function positioneerCirkels(width, height, data, formaat, circles) {
             circles
                 .attr("cx", (d => d.x))
                 .attr("cy", (d => d.y))
+            text
+                .attr("dx", (d => d.x))
+                .attr("dy", (d => d.y))
         })
 }
 
