@@ -45,3 +45,11 @@ circle:hover {
     alignment-baseline: middle;
     cursor: default;
 }
+
+.tooltip {
+    position: absolute;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px;			
+}
