@@ -11,7 +11,7 @@ const svg = d3.select('svg')
 let zoomed = true
 let zoomedCircleColor
 let origineleData
-let circleSizes = [15, 50, 80, 120, 160]
+let circleSizes
 
 fetchData()
     .then(rawData => functie.remapData(rawData))
@@ -25,16 +25,22 @@ fetchData()
     })
 
 function render(selection, data) {
-    var materialArray = data
+    const materialArray = data
     zoomed = !zoomed
+
+    if (zoomed) {
+        circleSizes = [15, 30, 45, 60, 75]
+    } else if (!zoomed) {
+        circleSizes = [30, 60, 90, 120, 150]
+    }
 
     const formaat = d3.scaleLinear()
         .domain(kleinsteEnGrootsteCircle(data))
-        .range([20, 180])
+        .range([circleSizes[0], circleSizes[4]])
 
     const kleur = bepaalCircleKleur(data)
 
-    let tooltip = d3.select('#datavis')
+    const tooltip = d3.select('#datavis')
         .append('div')
         .attr('class', 'tooltip')
     
@@ -91,8 +97,8 @@ function render(selection, data) {
             .attr('class', 'text')
         .merge(groups.select('text'))
             .text(function (d) {
-                console.log(d)
-                console.log(materialArray)
+                // console.log(d)
+                // console.log(materialArray)
             })
 
     const allCircles = selection.selectAll('circle')
@@ -113,7 +119,8 @@ function positioneerCirkels(width, height, data, formaat, circles, text) {
     const simulation = d3.forceSimulation()
         .force("center", d3.forceCenter().x(width / 2 - 300).y(height / 2))
         .force("charge", d3.forceManyBody().strength(.1))
-        .force("collide", d3.forceCollide().strength(.1).radius(d => (formaat(d.amount) + 0)).iterations(.1))
+        // .force("collide", d3.forceCollide().strength(.1).radius(d => (formaat(d.amount) + 0)).iterations(.1))
+        .force("collide", d3.forceCollide().strength(.1).radius(d => (formaat(d.amount) + 10)).iterations(.1))
 
     simulation
         .nodes(data)
@@ -140,6 +147,8 @@ function bepaalCircleKleur(data) {
             .domain(alleLanden)
             .range(d3.schemeCategory10)
     } else if (zoomed) {
+        console.log(kleinsteEnGrootsteCircle(data))
+
         return d3.scaleLinear()
             .domain(kleinsteEnGrootsteCircle(data))
             .range(['white', zoomedCircleColor])
@@ -147,7 +156,7 @@ function bepaalCircleKleur(data) {
 }
 
 function categorieCircleSize(data, materialArray) {
-    var hoogsteWaarde = kleinsteEnGrootsteCircle(materialArray)[1]
+    const hoogsteWaarde = kleinsteEnGrootsteCircle(materialArray)[1]
 
     if (data.amount < (hoogsteWaarde / 5)) {
         return circleSizes[0]
@@ -163,18 +172,18 @@ function categorieCircleSize(data, materialArray) {
 }
 
 function createLegenda(data) {
-    var xCircle = 1100
-    var yCircle = 550
-    var xLabel = xCircle + 200
+    const xCircle = 1200
+    const yCircle = 550
+    const xLabel = xCircle + 200
 
-    var size = d3.scaleSqrt()
+    const size = d3.scaleSqrt()
     .domain(circleSizes)
     .range(circleSizes)
 
-    var array = []
-    var maxMaterialAmount = kleinsteEnGrootsteCircle(data)[1]
+    const circleCategorieArray = []
+    const maxMaterialAmount = kleinsteEnGrootsteCircle(data)[1]
 
-    array.push("< " + Math.round(maxMaterialAmount / 5), Math.round(maxMaterialAmount / 5) + " - " + Math.round(maxMaterialAmount / 5 * 2), Math.round(maxMaterialAmount / 5) * 2 + " - " + Math.round(maxMaterialAmount / 5 * 3), Math.round(maxMaterialAmount / 5) * 3 + " - " + Math.round(maxMaterialAmount / 5 * 4), Math.round(maxMaterialAmount))
+    circleCategorieArray.push("< " + Math.round(maxMaterialAmount / 5), Math.round(maxMaterialAmount / 5) + " - " + Math.round(maxMaterialAmount / 5 * 2), Math.round(maxMaterialAmount / 5) * 2 + " - " + Math.round(maxMaterialAmount / 5 * 3), Math.round(maxMaterialAmount / 5) * 3 + " - " + Math.round(maxMaterialAmount / 5 * 4), Math.round(maxMaterialAmount))
 
     d3.select('svg').append('g')
     .attr('class', 'legenda')
@@ -207,7 +216,7 @@ function createLegenda(data) {
         .append('text')
             .attr('x', xLabel)
             .attr('y', d => yCircle - size(d))
-            .data(array)
+            .data(circleCategorieArray)
             .text(d => d)
             .style("font-size", 12)
             .attr('alignment-baseline', 'middle')
