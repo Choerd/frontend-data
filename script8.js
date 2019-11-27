@@ -8,10 +8,7 @@ const svg = d3.select('svg')
     .attr("width", width)
     .attr("height", height)
 
-let zoomed = true
-let zoomedCircleColor
-let origineleData
-let circleSizes
+let zoomed = true, zoomedCircleColor, origineleData, circleSizes, laagsteWaarde, hoogsteWaarde
 
 fetchData()
     .then(rawData => functie.remapData(rawData))
@@ -52,26 +49,27 @@ function render(selection, data) {
     const groupsEnter = groups.enter().append('g')
     groupsEnter
         .merge(groups)
-            .on('mouseover', function () {
+        .on('mouseover', function () {
+            tooltip
+                .style('opacity', 1)
+        })
+        .on('mousemove', function (d) {
+            tooltip
+                .style("left", (d3.mouse(this)[0] + 'px'))
+                .style("top", (d3.mouse(this)[1] + -40 + 'px'))
+            if (!zoomed) {
                 tooltip
-                    .style('opacity', 1)
-            })
-            .on('mousemove', function (d) {
+                    .html(d.amount + " voorwerpen uit " + "<strong>" + d.key + "</strong")
+            } else if (zoomed) {
                 tooltip
-                    .style("left", (d3.mouse(this)[0] + 'px'))
-                    .style("top", (d3.mouse(this)[1] + -40 + 'px'))
-                if (!zoomed) {
-                    tooltip
-                        .html(d.amount + " voorwerpen uit " + d.key)
-                } else if (zoomed) {
-                    tooltip
-                        .html(d.amount + " voorwerpen van " + d.key)
-                    }
-            })
-            .on('mouseleave', function () {
-                tooltip
-                    .style('opacity', 0)
-            })
+                    .html(d.amount + " voorwerpen van " + "<strong>" + d.key + "</strong")
+                }
+        })
+        .on('mouseleave', function () {
+            tooltip
+                .style('left', -9999 + 'px')
+        })
+
     groups.exit().remove()
 
     groupsEnter
@@ -96,9 +94,13 @@ function render(selection, data) {
     groupsEnter.append('text')
             .attr('class', 'text')
         .merge(groups.select('text'))
-            .text(function (d) {
-                // console.log(d)
-                // console.log(materialArray)
+            .text(function (data) {
+                console.log(hoogsteWaarde)
+
+                if (data.amount >= (hoogsteWaarde / 5) * 2) {
+                    return data.key
+                }
+
             })
 
     const allCircles = selection.selectAll('circle')
@@ -113,14 +115,14 @@ function render(selection, data) {
  * kleinsteEnGrootsteCircle
  * bepaalCircleKleur
  * categorieCircleSize
+ * createLegenda
  */
 
 function positioneerCirkels(width, height, data, formaat, circles, text) {
     const simulation = d3.forceSimulation()
-        .force("center", d3.forceCenter().x(width / 2 - 300).y(height / 2))
-        .force("charge", d3.forceManyBody().strength(.1))
-        // .force("collide", d3.forceCollide().strength(.1).radius(d => (formaat(d.amount) + 0)).iterations(.1))
-        .force("collide", d3.forceCollide().strength(.1).radius(d => (formaat(d.amount) + 10)).iterations(.1))
+        .force("center", d3.forceCenter().x(width / 2 - 20).y(height / 2))
+        .force("charge", d3.forceManyBody().strength(1))
+        .force("collide", d3.forceCollide().strength(.1).radius(d => (formaat(d.amount) + 3)).iterations(.1))
 
     simulation
         .nodes(data)
@@ -135,8 +137,8 @@ function positioneerCirkels(width, height, data, formaat, circles, text) {
 }
 
 function kleinsteEnGrootsteCircle(data) {
-    const laagsteWaarde = Math.min.apply(Math, data.map(laagste => laagste.amount))
-    const hoogsteWaarde = Math.max.apply(Math, data.map(hoogste => hoogste.amount))
+    laagsteWaarde = Math.min.apply(Math, data.map(laagste => laagste.amount))
+    hoogsteWaarde = Math.max.apply(Math, data.map(hoogste => hoogste.amount))
     return [laagsteWaarde, hoogsteWaarde]
 }
 
@@ -172,8 +174,8 @@ function categorieCircleSize(data, materialArray) {
 }
 
 function createLegenda(data) {
-    const xCircle = 1200
-    const yCircle = 550
+    const xCircle = 1350
+    const yCircle = 350
     const xLabel = xCircle + 200
 
     const size = d3.scaleSqrt()
@@ -182,26 +184,24 @@ function createLegenda(data) {
 
     const circleCategorieArray = []
     const maxMaterialAmount = kleinsteEnGrootsteCircle(data)[1]
-
     circleCategorieArray.push("< " + Math.round(maxMaterialAmount / 5), Math.round(maxMaterialAmount / 5) + " - " + Math.round(maxMaterialAmount / 5 * 2), Math.round(maxMaterialAmount / 5) * 2 + " - " + Math.round(maxMaterialAmount / 5 * 3), Math.round(maxMaterialAmount / 5) * 3 + " - " + Math.round(maxMaterialAmount / 5 * 4), Math.round(maxMaterialAmount))
 
     d3.select('svg').append('g')
     .attr('class', 'legenda')
 
-    d3.select('.legenda')
+    const legenda = d3.select('.legenda')
+    legenda
         .selectAll('legend')
         .data(circleSizes)
-        .enter()
-            .append('circle')
+        .enter().append('circle')
             .attr("cx", xCircle)
             .attr("cy", d => yCircle - size(d))
             .attr("r", d => size(d))
 
-    d3.select('.legenda')
+    legenda
         .selectAll('legend')
         .data(circleSizes)
-        .enter()
-        .append('line')
+        .enter().append('line')
             .attr('x1', d => xCircle + size(d))
             .attr('x2', xLabel)
             .attr('y1', d => yCircle - size(d))
@@ -209,11 +209,10 @@ function createLegenda(data) {
             .attr('stroke', 'black')
             .style('stroke-dasharray', ('2,2'))
 
-    d3.select('.legenda')
+    legenda
         .selectAll('legend')
         .data(circleSizes)
-        .enter()
-        .append('text')
+        .enter().append('text')
             .attr('x', xLabel)
             .attr('y', d => yCircle - size(d))
             .data(circleCategorieArray)
@@ -221,8 +220,7 @@ function createLegenda(data) {
             .style("font-size", 12)
             .attr('alignment-baseline', 'middle')
 
-    d3.select('.legenda')
-        .append('text')
+    legenda.append('text')
         .attr('x', xCircle)
         .attr("y", yCircle + 25)
         .text("Aantal voorwerpen")
