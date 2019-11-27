@@ -11,6 +11,7 @@ const svg = d3.select('svg')
 let zoomed = true
 let zoomedCircleColor
 let origineleData
+let circleSizes = [15, 50, 80, 120, 160]
 
 fetchData()
     .then(rawData => functie.remapData(rawData))
@@ -36,8 +37,10 @@ function render(selection, data) {
     let tooltip = d3.select('#datavis')
         .append('div')
         .attr('class', 'tooltip')
+    
+    const circlecontainer = d3.select('.circle-container')
 
-    const groups = selection.selectAll('g')
+    const groups = circlecontainer.selectAll('g')
         .data(data)
 
     const groupsEnter = groups.enter().append('g')
@@ -71,6 +74,7 @@ function render(selection, data) {
             .attr('id', (d => d.key))
             .on('click', function (object) {
                 d3.select('.tooltip').remove()
+                d3.select('.legenda').remove()
                 if (!zoomed) {
                     zoomedCircleColor = this.getAttribute('fill')
                     render(svg, object.materialen)
@@ -86,11 +90,16 @@ function render(selection, data) {
     groupsEnter.append('text')
             .attr('class', 'text')
         .merge(groups.select('text'))
-            .text(d => generateText(d))
+            .text(function (d) {
+                console.log(d)
+                console.log(materialArray)
+            })
 
     const allCircles = selection.selectAll('circle')
     const allText = selection.selectAll('text')
     positioneerCirkels(width, height, data, formaat, allCircles, allText)
+
+    createLegenda(data)
 }
 
 /* Ondersteunende functies
@@ -102,9 +111,9 @@ function render(selection, data) {
 
 function positioneerCirkels(width, height, data, formaat, circles, text) {
     const simulation = d3.forceSimulation()
-        .force("center", d3.forceCenter().x(width / 2).y(height / 2))
+        .force("center", d3.forceCenter().x(width / 2 - 300).y(height / 2))
         .force("charge", d3.forceManyBody().strength(.1))
-        .force("collide", d3.forceCollide().strength(.2).radius(d => (formaat(d.amount) + 1)).iterations(2))
+        .force("collide", d3.forceCollide().strength(.1).radius(d => (formaat(d.amount) + 0)).iterations(.1))
 
     simulation
         .nodes(data)
@@ -137,25 +146,77 @@ function bepaalCircleKleur(data) {
     }
 }
 
-function generateText(d) {
-    // iets doen met de tekst
-    // return d.key
-}
-
 function categorieCircleSize(data, materialArray) {
     var hoogsteWaarde = kleinsteEnGrootsteCircle(materialArray)[1]
 
     if (data.amount < (hoogsteWaarde / 5)) {
-        return 20
-    } else if (data.amount > (hoogsteWaarde / 5) && data.amount < (hoogsteWaarde / 5) * 2) {
-        return 60
-    } else if (data.amount > (hoogsteWaarde / 5) * 2 && data.amount < (hoogsteWaarde / 5) * 3) {
-        return 100
-    } else if (data.amount > (hoogsteWaarde / 5) * 3 && data.amount < (hoogsteWaarde / 5) * 4) {
-        return 140
-    } else if (data.amount > (hoogsteWaarde / 5) * 4) {
-        return 180
+        return circleSizes[0]
+    } else if (data.amount >= (hoogsteWaarde / 5) && data.amount < (hoogsteWaarde / 5) * 2) {
+        return circleSizes[1]
+    } else if (data.amount >= (hoogsteWaarde / 5) * 2 && data.amount < (hoogsteWaarde / 5) * 3) {
+        return circleSizes[2]
+    } else if (data.amount >= (hoogsteWaarde / 5) * 3 && data.amount < (hoogsteWaarde / 5) * 4) {
+        return circleSizes[3]
+    } else if (data.amount >= (hoogsteWaarde / 5) * 4) {
+        return circleSizes[4]
     }
 }
 
+function createLegenda(data) {
+    var xCircle = 1100
+    var yCircle = 550
+    var xLabel = xCircle + 200
 
+    var size = d3.scaleSqrt()
+    .domain(circleSizes)
+    .range(circleSizes)
+
+    var array = []
+    var maxMaterialAmount = kleinsteEnGrootsteCircle(data)[1]
+
+    array.push("< " + Math.round(maxMaterialAmount / 5), Math.round(maxMaterialAmount / 5) + " - " + Math.round(maxMaterialAmount / 5 * 2), Math.round(maxMaterialAmount / 5) * 2 + " - " + Math.round(maxMaterialAmount / 5 * 3), Math.round(maxMaterialAmount / 5) * 3 + " - " + Math.round(maxMaterialAmount / 5 * 4), Math.round(maxMaterialAmount))
+
+    d3.select('svg').append('g')
+    .attr('class', 'legenda')
+
+    d3.select('.legenda')
+        .selectAll('legend')
+        .data(circleSizes)
+        .enter()
+            .append('circle')
+            .attr("cx", xCircle)
+            .attr("cy", d => yCircle - size(d))
+            .attr("r", d => size(d))
+
+    d3.select('.legenda')
+        .selectAll('legend')
+        .data(circleSizes)
+        .enter()
+        .append('line')
+            .attr('x1', d => xCircle + size(d))
+            .attr('x2', xLabel)
+            .attr('y1', d => yCircle - size(d))
+            .attr('y2', d => yCircle - size(d))
+            .attr('stroke', 'black')
+            .style('stroke-dasharray', ('2,2'))
+
+    d3.select('.legenda')
+        .selectAll('legend')
+        .data(circleSizes)
+        .enter()
+        .append('text')
+            .attr('x', xLabel)
+            .attr('y', d => yCircle - size(d))
+            .data(array)
+            .text(d => d)
+            .style("font-size", 12)
+            .attr('alignment-baseline', 'middle')
+
+    d3.select('.legenda')
+        .append('text')
+        .attr('x', xCircle)
+        .attr("y", yCircle + 25)
+        .text("Aantal voorwerpen")
+        .style("font-size", 12)
+        .attr("text-anchor", "middle")
+}

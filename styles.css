@@ -53,3 +53,17 @@ circle:hover {
     border-radius: 5px;
     padding: 5px;			
 }
+
+
+
+.legenda {
+    fill: none;
+    stroke: black;
+    position: absolute;
+    bottom: 0;
+}
+
+.legenda circle:hover {
+    stroke-width: unset;
+}
+

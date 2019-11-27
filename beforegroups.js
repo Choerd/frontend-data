@@ -34,11 +34,13 @@ function render(selection, data) {
         .data(data)
     circles
         .enter().append('circle')
-        .attr('class', 'circle')
-        .attr("fill", (d => kleur(d.key)))
-        .on('click', d => render(svg, d.materialen))
+            .attr('class', 'circle')
+            .attr("fill", (d => kleur(d.key)))
+            .on('click', d => render(svg, d.materialen))
+            
         .merge(circles)
-        .attr("r", (d => formaat(d.amount)))
+            .attr("r", (d => formaat(d.amount)))
+
     circles
         .exit().remove()
 
