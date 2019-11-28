@@ -170,6 +170,7 @@ function categorieCircleSize(data, materialArray) {
     }
 }
 
+// Grotendeels overgenomen van het voorbeeld
 function createLegenda(data) {
     const xCircle = 1350
     const yCircle = 350
@@ -203,8 +204,7 @@ function createLegenda(data) {
             .attr('x2', xLabel)
             .attr('y1', d => yCircle - size(d))
             .attr('y2', d => yCircle - size(d))
-            .attr('stroke', 'black')
-            .style('stroke-dasharray', ('2,2'))
+            .attr('class', 'legenda-circle')
 
     legenda
         .selectAll('legend')
@@ -214,13 +214,11 @@ function createLegenda(data) {
             .attr('y', d => yCircle - size(d))
             .data(circleCategorieArray)
             .text(d => d)
-            .style("font-size", 12)
-            .attr('alignment-baseline', 'middle')
+            .attr('class', 'legenda-text')
 
     legenda.append('text')
         .attr('x', xCircle)
         .attr("y", yCircle + 25)
         .text("Aantal voorwerpen")
-        .style("font-size", 12)
-        .attr("text-anchor", "middle")
+        .attr('class', 'legenda-title')
 }

@@ -65,3 +65,17 @@ circle:hover {
     stroke-width: unset;
 }
 
+.legenda-circle {
+    stroke: black;
+    stroke-dasharray: 2.2;
+}
+
+.legenda-text {
+    font-size: 12px;
+    alignment-baseline: middle;
+}
+
+.legenda-title {
+    font-size: 12px;
+    text-anchor: middle;
+}
