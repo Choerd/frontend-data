@@ -4,10 +4,6 @@
     padding: 0;
 }
 
-span {
-    font-weight: 600;
-}
-
 .datavis-container {
     width: 100vw;
     height: 90vh;

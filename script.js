@@ -8,7 +8,7 @@ const svg = d3.select('svg')
     .attr("width", width)
     .attr("height", height)
 
-let zoomed = true, zoomedCircleColor, origineleData, circleSizes, laagsteWaarde, hoogsteWaarde
+let zoomed = true, zoomedCircleColor, origineleData, circleSizes, laagsteWaarde, hoogsteWaarde, zoomedLand
 
 fetchData()
     .then(rawData => functie.remapData(rawData))
@@ -80,6 +80,7 @@ function render(selection, data) {
                 d3.select('.legenda').remove()
                 if (!zoomed) {
                     zoomedCircleColor = this.getAttribute('fill')
+                    zoomedLand = this.id
                     render(svg, object.materialen)
                 } else if (zoomed) {
                     render(svg, origineleData)
@@ -104,6 +105,7 @@ function render(selection, data) {
     positioneerCirkels(width, height, data, formaat, allCircles, allText)
 
     createLegenda(data)
+    createHeader()
 }
 
 /* Ondersteunende functies
@@ -221,4 +223,14 @@ function createLegenda(data) {
         .attr("y", yCircle + 25)
         .text("Aantal voorwerpen")
         .attr('class', 'legenda-title')
+}
+
+function createHeader() {
+    if (zoomed) {
+        document.querySelector('.info span').textContent = zoomedLand
+        document.querySelector('.info span').style.color = zoomedCircleColor
+    } else if (!zoomed) {
+        document.querySelector('.info span').textContent = "de verschillende landen?"
+        document.querySelector('.info span').style.color = 'unset'
+    }
 }
