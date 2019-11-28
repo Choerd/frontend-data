@@ -57,7 +57,7 @@ function getMaterialsPerCountry(accessibleData) {
 function fromObjectToArray(materialObjectPerCountry) {
     var nestedDataArray = []
 
-    materialObjectPerCountry.forEach(land => { // Voor elk land een eigen object aanmaken
+    materialObjectPerCountry.forEach(land => {
         var obj = {
             key: land.land,
             amount: null,
