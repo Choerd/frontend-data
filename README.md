@@ -12,18 +12,17 @@ Wanneer de gebruiker op de website komt ziet hij een overzicht van de landen die
 Wanneer de gebruiker op een van de landen klikt spat de bal uiteen en veranderd deze bal in allemaal materialen en kan de gebruiker zien welke materialen er populair waren in dat land.  
 `hoveren:` Wanneer de gebruiker over een bal hovered kan hij meer informatie zien. De ballen zijn namelijk een indicatie.
 
-afbeelding hier
+![images_Tekengebied 1](https://user-images.githubusercontent.com/45365598/69821230-55afae00-1203-11ea-9be3-62385b97770a.png)
 
 > **Doel:** Inzicht geven in waar de voorwerpen uit een bepaalde categorie vandaan komen en van welke materialen deze gemaakt zijn.  
 **Doelgroep:** Museumbezoekers die geïnteresseerd zijn in een bepaald land en daarvan willen weten welke materialen daar populair zijn. Dit kan namelijk duidelijk verschillen per land.
 
 ## Bubble Chart voorbeeld
-afbeekding
+![images_Tekengebied 1 kopie](https://user-images.githubusercontent.com/45365598/69821247-64966080-1203-11ea-9852-0609acb6ad98.png)
 
 **Links gebruikte voorbeelden voor mijn visualisatie:**  
 [Bubble Chart](https://www.d3-graph-gallery.com/graph/circularpacking_template.html)  
 [Bubble Chart Legenda](https://www.d3-graph-gallery.com/graph/bubble_legend.html)  
-
 
 ## Inhoudsopgave
 * [Updaten en opschonen](#Updaten-en-opschonen)
@@ -34,12 +33,12 @@ afbeekding
 ## Updaten en opschonen
 In mijn wiki heb ik verschillende stukken geschreven over de code waarmee ik mijn data transformeer en opschoon maar ook over hoe mijn update werkt in d3.
 
-`D3 updaten`
+**D3 updaten**
 * [D3](https://github.com/Choerd/frontend-data/wiki/D3.js)
 * [D3 Update Pattern](https://github.com/Choerd/frontend-data/wiki/D3-Update-Pattern)
 * [D3 Update Pattern - Proces](https://github.com/Choerd/frontend-data/wiki/D3-Update-Pattern---Proces)
 
-`JS opschonen`
+**JS opschonen**
 * [Data Transforming Pattern](https://github.com/Choerd/frontend-data/wiki/Data-Transforming-Pattern)
 
 ## API
