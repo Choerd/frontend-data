@@ -227,7 +227,7 @@ function createLegenda(data) {
 
 function createHeader() {
     if (zoomed) {
-        document.querySelector('.info span').textContent = zoomedLand
+        document.querySelector('.info span').textContent = zoomedLand + "?"
         document.querySelector('.info span').style.color = zoomedCircleColor
     } else if (!zoomed) {
         document.querySelector('.info span').textContent = "de verschillende landen?"
