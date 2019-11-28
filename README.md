@@ -31,7 +31,71 @@ Wanneer de gebruiker op een van de landen klikt spat de bal uiteen en veranderd 
 * [Credits](#Credits)
 
 ## Updaten en opschonen
-In mijn wiki heb ik verschillende stukken geschreven over de code waarmee ik mijn data transformeer en opschoon maar ook over hoe mijn update werkt in d3.
+**Korte uitleg update functie**  
+Mijn update functie bestaat uit een groep met daarin een circle met tekst. Ik geef de data mee aan de groep zodat ik deze ook kan gebruiken in de circle en tekst. Omdat bij de groep `.exit() .remove()` gebruik hoef ik deze niet nog een keer te gebruiken bij mij circle en tekst. Ik gebruik voornamelijk merge omdat in mijn enter bijna allemaal hetzelfde moet gebeuren als in mijn update. Hieronder kun je mijn update functie bekijken.
+
+<details><summary>Mijn update functie</summary>
+
+```javascript
+    const groups = circlecontainer.selectAll('g')
+        .data(data)
+
+    const groupsEnter = groups.enter().append('g')
+    groupsEnter
+        .merge(groups)
+        .on('mouseover', function () {
+            tooltip
+                .style('opacity', 1)
+        })
+        .on('mousemove', function (d) {
+            tooltip
+                .style("left", (d3.mouse(this)[0] + 'px'))
+                .style("top", (d3.mouse(this)[1] + -40 + 'px'))
+            if (!zoomed) {
+                tooltip
+                    .html(d.amount + " voorwerpen uit " + "<strong>" + d.key + "</strong")
+            } else if (zoomed) {
+                tooltip
+                    .html(d.amount + " voorwerpen van " + "<strong>" + d.key + "</strong")
+                }
+        })
+        .on('mouseleave', function () {
+            tooltip
+                .style('left', -9999 + 'px')
+        })
+    groups.exit().remove()
+
+    groupsEnter
+        .append('circle')
+            .attr('class', 'circle')
+            .attr('id', (d => d.key))
+            .on('click', function (object) {
+                if (!zoomed) {
+                    zoomedCircleColor = this.getAttribute('fill')
+                    render(svg, object.materialen)
+                } else if (zoomed) {
+                    render(svg, origineleData)
+                }
+            })
+        .merge(groups.select('circle'))
+            .transition().duration(350)
+            .attr("r", (d => categorieCircleSize(d, materialArray)))
+            .attr("fill", (d => kleur(d.amount)))
+
+    groupsEnter.append('text')
+            .attr('class', 'text')
+        .merge(groups.select('text'))
+            .text(function (data) {
+                if (data.amount >= (hoogsteWaarde / 5) * 1) {
+                    return data.key
+                }
+            })
+```
+</details>
+
+ ---
+
+Voor meer informatie over het update patroon verwijs ik je naar mijn wiki waarin ik meerdere stukken heb geschreven over d3, het opschonen van mijn data, het update patroon en het proces daarvan. Bekijk onderstaande links
 
 **D3 updaten**
 * [D3](https://github.com/Choerd/frontend-data/wiki/D3.js)
@@ -51,7 +115,6 @@ Voor mijn visualisatie had ik niet veel data nodig om het een abstracte weergave
 De data was best wel schoon toen ik het ophaalde. Het enige wat mij stoorde was dat er soms nutteloze tekst achter het materiaal stond tussen haakjes. Dit is het enige wat ik heb weggehaald.
 
 <details><summary>Mijn SPARQL query</summary>
-
 
 ```
 PREFIX dct: <http://purl.org/dc/terms/>
@@ -77,7 +140,6 @@ WHERE {
 
 } ORDER BY DESC(?cho)
 ```
-
 </details>
 
 ## Features

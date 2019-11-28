@@ -18,7 +18,7 @@ fetchData()
     .then(data => {
         origineleData = data
 
-        render(svg, data)
+        render(svg, data) 
     })
 
 function render(selection, data) {
