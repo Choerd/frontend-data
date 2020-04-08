@@ -87,7 +87,7 @@ function render(selection, data) {
                 }
             })
         .merge(groups.select('circle'))
-            .transition().duration(350)
+            .transition().duration(3500)
             .attr("r", (d => categorieCircleSize(d, materialArray)))
             .attr("fill", (d => kleur(d.amount)))
 
